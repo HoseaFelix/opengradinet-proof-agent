@@ -55,11 +55,17 @@ export default function SettingsPage() {
         <div>
           <label className="label">OpenGradient API Key</label>
           <div className="flex gap-2">
-            <input className="input" type={showOgKey ? "text" : "password"} placeholder="0x..." value={state.ogApiKey} onChange={(e) => setDraft({ ...state, ogApiKey: e.target.value })} />
+            <input
+              className="input"
+              type={showOgKey ? "text" : "password"}
+              placeholder={state.usingServerOgKey ? "Using server default key" : "0x..."}
+              value={state.ogApiKey}
+              onChange={(e) => setDraft({ ...state, ogApiKey: e.target.value })}
+            />
             <button onClick={() => setShowOgKey(!showOgKey)} className="btn btn-secondary">{showOgKey ? <EyeOff size={14} /> : <Eye size={14} />}</button>
           </div>
           <p className="text-xs mt-1" style={{ color: "var(--text-muted)" }}>
-            Use your OpenGradient bearer credential (wallet private key for current alpha API).
+            Optional. Paste your own wallet private key to override the server default. This value is write-only and won&apos;t be shown again.
           </p>
         </div>
 

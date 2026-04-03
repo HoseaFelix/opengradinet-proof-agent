@@ -16,7 +16,7 @@ export type UserSettings = {
 const DEFAULT_SETTINGS: UserSettings = {
   ogApiKey: "",
   memSyncKey: "",
-  defaultModel: "gpt-5",
+  defaultModel: "gemini-3-flash",
   notifications: {
     runCompletion: true,
     proofConfirmation: true,

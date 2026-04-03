@@ -1,11 +1,12 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { AVAILABLE_MODELS } from "@/lib/opengradient";
 import { randomId } from "@/lib/utils";
-import { createAgent } from "@/lib/api/client";
+import { createAgent, fetchSettings } from "@/lib/api/client";
 import { useAuth } from "@/components/auth/AuthProvider";
 import { Agent } from "@/types";
 import {
@@ -63,15 +64,23 @@ export default function NewAgentPage() {
   const { user } = useAuth();
   const [step, setStep] = useState(1);
 
+  const { data: settings } = useQuery({
+    queryKey: ["settings"],
+    queryFn: fetchSettings,
+    staleTime: 30_000,
+  });
+  const memsyncConfigured = !!settings?.memSyncKey?.trim();
+
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [avatar, setAvatar] = useState("🤖");
   const [color, setColor] = useState("#6366f1");
 
-  const [model, setModel] = useState("gpt-5");
+  const [model, setModel] = useState(AVAILABLE_MODELS[0] || "gemini-3-flash");
   const [systemPrompt, setSystemPrompt] = useState("");
 
-  const [memoryEnabled, setMemoryEnabled] = useState(true);
+  const [memoryEnabled, setMemoryEnabled] = useState(false);
+  const [memsyncGateOpen, setMemsyncGateOpen] = useState(false);
   const [memCategories, setMemCategories] = useState<string[]>(["career", "interests"]);
   const [memRetention, setMemRetention] = useState<"both" | "semantic" | "episodic">("both");
 
@@ -213,15 +222,50 @@ export default function NewAgentPage() {
               <h2 className="text-xl font-bold" style={{ color: "var(--text-primary)" }}>Memory Configuration</h2>
               <p className="text-sm mt-1" style={{ color: "var(--text-muted)" }}>Enable MemSync to give your agent persistent memory</p>
             </div>
+            {!memsyncConfigured && (
+              <div className="surface p-4" style={{ borderColor: "rgba(245,158,11,0.25)" }}>
+                <div className="text-sm font-semibold" style={{ color: "var(--text-primary)" }}>
+                  MemSync needs an API key
+                </div>
+                <div className="text-xs mt-1" style={{ color: "var(--text-muted)" }}>
+                  Add your MemSync API key in Settings to enable persistent memory.
+                </div>
+                <div className="mt-3">
+                  <Link href="/settings" className="btn btn-secondary btn-sm">
+                    Open Settings
+                  </Link>
+                </div>
+              </div>
+            )}
             <div className="flex items-center justify-between p-4 rounded-xl" style={{ background: "var(--surface-hover)", border: "1px solid var(--border)" }}>
               <div>
                 <div className="font-medium text-sm" style={{ color: "var(--text-primary)" }}>Enable MemSync Memory</div>
                 <div className="text-xs mt-0.5" style={{ color: "var(--text-muted)" }}>Agent will remember context across runs</div>
               </div>
-              <button onClick={() => setMemoryEnabled(!memoryEnabled)} className="w-12 h-6 rounded-full transition-all relative" style={{ background: memoryEnabled ? "var(--primary)" : "var(--border)" }}>
+              <button
+                onClick={() => {
+                  if (!memsyncConfigured) {
+                    setMemsyncGateOpen(true);
+                    return;
+                  }
+                  setMemoryEnabled(!memoryEnabled);
+                }}
+                className="w-12 h-6 rounded-full transition-all relative"
+                style={{
+                  background: memoryEnabled ? "var(--primary)" : "var(--border)",
+                  opacity: memsyncConfigured ? 1 : 0.4,
+                  cursor: memsyncConfigured ? "pointer" : "not-allowed",
+                }}
+                aria-disabled={!memsyncConfigured}
+              >
                 <div className="absolute top-0.5 w-5 h-5 rounded-full bg-white transition-all" style={{ left: memoryEnabled ? "26px" : "2px" }} />
               </button>
             </div>
+            {memsyncGateOpen && !memsyncConfigured && (
+              <div className="text-xs" style={{ color: "var(--warning)" }}>
+                MemSync is disabled until you add a MemSync API key in Settings.
+              </div>
+            )}
             {memoryEnabled && (
               <div className="space-y-4 animate-fade-in">
                 <div>

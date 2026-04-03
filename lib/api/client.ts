@@ -102,6 +102,9 @@ export type UserSettings = {
   ogApiKey: string;
   memSyncKey: string;
   defaultModel: string;
+  // Server-provided hints (secrets are never returned).
+  ogApiKeyConfigured?: boolean;
+  usingServerOgKey?: boolean;
   notifications: {
     runCompletion: boolean;
     proofConfirmation: boolean;

@@ -3,6 +3,7 @@ import { Agent } from "@/types";
 import { createAgent, listAgents } from "@/lib/server/firestoreRepo";
 import { badRequest, ok, serverError } from "@/lib/server/api";
 import { requireUser } from "@/lib/server/auth";
+import { requireMemSyncApiKeyForUser } from "@/lib/server/memsync";
 
 export async function GET(request: NextRequest) {
   try {
@@ -24,6 +25,16 @@ export async function POST(request: NextRequest) {
     const body = (await request.json()) as Agent;
     if (!body?.id || !body?.name || !body?.systemPrompt || !body?.model) {
       return badRequest("Invalid agent payload");
+    }
+
+    if (body.memoryEnabled) {
+      try {
+        await requireMemSyncApiKeyForUser(auth.user.uid);
+      } catch (e) {
+        const message =
+          e instanceof Error ? e.message : "Missing MemSync API key in settings";
+        return badRequest(message);
+      }
     }
 
     const payload: Agent = {

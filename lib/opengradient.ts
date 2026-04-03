@@ -2,10 +2,10 @@ import { AIModel, Attestation, InferenceResult } from "@/types";
 import { firebaseAuth } from "@/lib/firebase/client";
 
 export const AVAILABLE_MODELS = [
+  "gemini-3-flash",
   "gpt-5",
   "claude-sonnet-4-6",
   "grok-4",
-  "gemini-3-flash",
 ];
 
 async function authHeaders(extra?: Record<string, string>) {
