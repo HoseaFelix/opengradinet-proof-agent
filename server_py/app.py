@@ -13,9 +13,9 @@ from pydantic import BaseModel
 
 import opengradient as og
 
-from eth_account import Account
-from web3 import Web3
-from x402v2.mechanisms.evm.constants import PERMIT2_ADDRESS
+# Avoid importing x402 libraries directly (dependency names differ across opengradient versions).
+# This is the Permit2 address used by OpenGradient's x402 stack (Base Sepolia).
+PERMIT2_ADDRESS = (os.environ.get("OG_PERMIT2_ADDRESS") or "0xA2820a4d4F3A8c5Fa4eaEBF45B093173105a8f8F").strip()
 
 
 class ChatMessage(BaseModel):
@@ -134,6 +134,9 @@ def list_models() -> Dict[str, Any]:
 
 @app.get("/debug/opg")
 def debug_opg() -> Dict[str, Any]:
+    from eth_account import Account
+    from web3 import Web3
+
     private_key = os.environ.get("OG_PRIVATE_KEY")
     if not private_key:
         raise HTTPException(status_code=500, detail="OG_PRIVATE_KEY is not set")
