@@ -1,10 +1,11 @@
 "use client";
 
 import Link from "next/link";
-import { Search, Bell, Plus, LogOut } from "lucide-react";
+import { Search, Plus, LogOut, Menu } from "lucide-react";
 import { useAppStore } from "@/store/useAppStore";
 import { usePathname } from "next/navigation";
 import { useAuth } from "@/components/auth/AuthProvider";
+import { NotificationsPanel } from "./NotificationsPanel";
 
 const BREADCRUMB_MAP: Record<string, string> = {
     "/": "Dashboard",
@@ -17,7 +18,7 @@ const BREADCRUMB_MAP: Record<string, string> = {
 };
 
 export function TopNav() {
-    const { sidebarCollapsed, setCommandPaletteOpen } = useAppStore();
+    const { sidebarCollapsed, setCommandPaletteOpen, setSidebarCollapsed } = useAppStore();
     const pathname = usePathname();
     const { user, logout } = useAuth();
 
@@ -26,75 +27,77 @@ export function TopNav() {
         (pathname.includes("/runs/") ? "Run Audit" : pathname.includes("/agents/") ? "Agent Detail" : "ProofAgent");
 
     return (
-        <header
-            className="fixed top-0 right-0 z-30 h-14 flex items-center px-5 gap-4 border-b"
-            style={{
-                left: sidebarCollapsed ? "64px" : "240px",
-                background: "rgba(10,10,15,0.85)",
-                backdropFilter: "blur(12px)",
-                borderColor: "var(--border)",
-                transition: "left 0.3s",
-            }}
-        >
-            {/* Page title */}
-            <h1
-                className="text-sm font-semibold mr-auto"
-                style={{ color: "var(--text-primary)" }}
+        <header className="fixed top-0 right-0 z-30 h-16 flex items-center px-4 md:px-6 lg:px-8 gap-4 border-b border-slate-700/50 bg-slate-900/95 backdrop-blur-xl">
+            {/* Mobile menu button */}
+            <button
+                onClick={() => setSidebarCollapsed(false)}
+                className="md:hidden p-2 rounded-lg hover:bg-slate-800 text-slate-400 hover:text-white transition-colors"
             >
+                <Menu size={20} />
+            </button>
+
+            {/* Page title */}
+            <h1 className="text-sm font-semibold text-white mr-auto truncate">
                 {label}
             </h1>
 
             {/* Search */}
             <button
                 onClick={() => setCommandPaletteOpen(true)}
-                className="flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm"
-                style={{
-                    background: "var(--surface)",
-                    border: "1px solid var(--border)",
-                    color: "var(--text-muted)",
-                }}
+                className="hidden sm:flex items-center gap-2 px-3 py-2 rounded-lg text-sm bg-slate-800 border border-slate-700 text-slate-300 hover:text-white hover:bg-slate-700 transition-colors"
             >
                 <Search size={14} />
                 <span>Search...</span>
-                <kbd
-                    className="ml-3 text-xs px-1.5 py-0.5 rounded"
-                    style={{ background: "var(--surface-hover)", color: "var(--text-muted)", border: "1px solid var(--border)" }}
-                >
+                <kbd className="ml-3 text-xs px-1.5 py-0.5 rounded bg-slate-700 text-slate-400 border border-slate-600">
                     ⌘K
                 </kbd>
+            </button>
+
+            {/* Mobile search button */}
+            <button
+                onClick={() => setCommandPaletteOpen(true)}
+                className="sm:hidden p-2 rounded-lg hover:bg-slate-800 text-slate-400 hover:text-white transition-colors"
+            >
+                <Search size={18} />
             </button>
 
             {/* New agent */}
             <Link
                 href="/agents/new"
-                className="btn btn-primary btn-sm"
+                className="hidden sm:flex items-center gap-2 px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white text-sm font-medium rounded-lg transition-colors"
             >
                 <Plus size={14} />
                 New Agent
             </Link>
 
-            {/* Notifications */}
-            <button
-                className="w-9 h-9 rounded-lg flex items-center justify-center relative"
-                style={{
-                    background: "var(--surface)",
-                    border: "1px solid var(--border)",
-                    color: "var(--text-secondary)",
-                }}
+            {/* Mobile new agent button */}
+            <Link
+                href="/agents/new"
+                className="sm:hidden p-2 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white transition-colors"
             >
-                <Bell size={16} />
-                <span
-                    className="absolute top-1.5 right-1.5 w-2 h-2 rounded-full"
-                    style={{ background: "var(--primary)" }}
-                />
-            </button>
+                <Plus size={18} />
+            </Link>
 
+            {/* Notifications */}
+            <NotificationsPanel />
+
+            {/* User menu */}
             <button
                 onClick={logout}
-                className="btn btn-secondary btn-sm"
+                className="hidden sm:flex items-center gap-2 px-3 py-2 text-sm text-slate-300 hover:text-white hover:bg-slate-800 rounded-lg transition-colors"
                 title={user?.email || "Sign out"}
             >
                 <LogOut size={14} />
+                Sign out
+            </button>
+
+            {/* Mobile sign out */}
+            <button
+                onClick={logout}
+                className="sm:hidden p-2 rounded-lg hover:bg-slate-800 text-slate-400 hover:text-white transition-colors"
+                title="Sign out"
+            >
+                <LogOut size={18} />
             </button>
         </header>
     );

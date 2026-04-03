@@ -66,90 +66,103 @@ export default function AgentsPage() {
   }
 
   return (
-    <div className="max-w-7xl space-y-6">
-      <div className="flex items-center justify-between animate-fade-in-up">
+    <div className="space-y-8">
+      {/* Header */}
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 animate-fade-in-up">
         <div>
-          <h1 className="text-2xl font-bold" style={{ color: "var(--text-primary)" }}>
-            Agents
-          </h1>
-          <p className="text-sm mt-0.5" style={{ color: "var(--text-muted)" }}>
+          <h1 className="text-3xl font-bold text-white">Agents</h1>
+          <p className="text-slate-400 text-lg mt-1">
             {agents.length} agents configured
           </p>
         </div>
-        <Link href="/agents/new" className="btn btn-primary">
+        <Link
+          href="/agents/new"
+          className="inline-flex items-center gap-2 px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white text-sm font-medium rounded-lg transition-colors shrink-0"
+        >
           <Plus size={16} /> New Agent
         </Link>
       </div>
 
-      <div
-        className="surface p-4 flex flex-wrap items-center gap-3 animate-fade-in-up"
-        style={{ animationDelay: "60ms" }}
-      >
-        <div className="relative flex-1 min-w-48">
-          <Search
-            size={14}
-            className="absolute left-3 top-1/2 -translate-y-1/2"
-            style={{ color: "var(--text-muted)" }}
-          />
-          <input
-            className="input pl-9"
-            placeholder="Search agents..."
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-          />
-        </div>
+      {/* Filters */}
+      <div className="bg-slate-800/50 backdrop-blur-sm rounded-xl border border-slate-700/50 p-4 md:p-6 animate-fade-in-up" style={{ animationDelay: "60ms" }}>
+        <div className="flex flex-col lg:flex-row gap-4">
+          {/* Search */}
+          <div className="relative flex-1 min-w-0">
+            <Search
+              size={16}
+              className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"
+            />
+            <input
+              className="w-full bg-slate-700/50 border border-slate-600 rounded-lg px-10 py-3 text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-colors"
+              placeholder="Search agents..."
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+            />
+          </div>
 
-        <div className="flex items-center gap-2 ml-auto">
-          <SlidersHorizontal size={14} style={{ color: "var(--text-muted)" }} />
+          {/* Filter Controls */}
+          <div className="flex flex-wrap items-center gap-3">
+            <SlidersHorizontal size={16} className="text-slate-400 shrink-0" />
 
-          <select
-            className="input"
-            style={{ width: "auto" }}
-            value={filterStatus}
-            onChange={(e) => setFilterStatus(e.target.value as AgentStatus | "all")}
-          >
-            <option value="all">All Status</option>
-            <option value="active">Active</option>
-            <option value="paused">Paused</option>
-            <option value="archived">Archived</option>
-          </select>
+            <select
+              className="bg-slate-700/50 border border-slate-600 rounded-lg px-3 py-2 text-white focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-colors"
+              value={filterStatus}
+              onChange={(e) => setFilterStatus(e.target.value as AgentStatus | "all")}
+            >
+              <option value="all">All Status</option>
+              <option value="active">Active</option>
+              <option value="paused">Paused</option>
+              <option value="archived">Archived</option>
+            </select>
 
-          <select
-            className="input"
-            style={{ width: "auto" }}
-            value={filterMemory}
-            onChange={(e) => setFilterMemory(e.target.value as "all" | "yes" | "no")}
-          >
-            <option value="all">All Memory</option>
-            <option value="yes">Memory ON</option>
-            <option value="no">No Memory</option>
-          </select>
+            <select
+              className="bg-slate-700/50 border border-slate-600 rounded-lg px-3 py-2 text-white focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-colors"
+              value={filterMemory}
+              onChange={(e) => setFilterMemory(e.target.value as "all" | "yes" | "no")}
+            >
+              <option value="all">All Memory</option>
+              <option value="yes">Memory ON</option>
+              <option value="no">No Memory</option>
+            </select>
 
-          <select
-            className="input"
-            style={{ width: "auto" }}
-            value={sortBy}
-            onChange={(e) =>
-              setSortBy(e.target.value as "lastRun" | "totalRuns" | "created")
-            }
-          >
-            <option value="lastRun">Sort: Last Run</option>
-            <option value="totalRuns">Sort: Total Runs</option>
-            <option value="created">Sort: Created</option>
-          </select>
+            <select
+              className="bg-slate-700/50 border border-slate-600 rounded-lg px-3 py-2 text-white focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-colors"
+              value={sortBy}
+              onChange={(e) =>
+                setSortBy(e.target.value as "lastRun" | "totalRuns" | "created")
+              }
+            >
+              <option value="lastRun">Last Run</option>
+              <option value="totalRuns">Total Runs</option>
+              <option value="created">Created</option>
+            </select>
+          </div>
         </div>
       </div>
 
+      {/* Agents Grid */}
       {isLoading ? (
-        <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
+        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
           {[1, 2, 3, 4, 5, 6].map((i) => (
-            <div key={i} className="skeleton h-52 rounded-xl" />
+            <div key={i} className="bg-slate-800/50 rounded-xl border border-slate-700/50 p-6 animate-pulse">
+              <div className="flex items-center gap-4 mb-4">
+                <div className="w-12 h-12 bg-slate-700 rounded-xl"></div>
+                <div className="flex-1">
+                  <div className="h-4 bg-slate-700 rounded w-3/4 mb-2"></div>
+                  <div className="h-3 bg-slate-700 rounded w-1/2"></div>
+                </div>
+              </div>
+              <div className="space-y-2">
+                <div className="h-3 bg-slate-700 rounded"></div>
+                <div className="h-3 bg-slate-700 rounded w-5/6"></div>
+              </div>
+            </div>
           ))}
         </div>
       ) : filtered.length > 0 ? (
-        <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
+        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
           {filtered.map((agent, i) => (
-            <div key={agent.id} style={{ animationDelay: `${i * 60}ms` }}>
+            <div key={agent.id} style={{ animationDelay: `${i * 60}ms` }} className="animate-fade-in-up">
               <AgentCard
                 agent={agent}
                 onRunNow={(a) => setRunTarget(a)}
@@ -164,40 +177,55 @@ export default function AgentsPage() {
           ))}
         </div>
       ) : (
-        <div className="surface flex flex-col items-center justify-center py-20 gap-4 animate-fade-in">
-          <Bot size={48} style={{ color: "var(--text-muted)" }} />
+        <div className="bg-slate-800/50 backdrop-blur-sm rounded-xl border border-slate-700/50 flex flex-col items-center justify-center py-20 gap-6 animate-fade-in">
+          <div className="w-16 h-16 rounded-full bg-slate-700/50 flex items-center justify-center">
+            <Bot size={32} className="text-slate-400" />
+          </div>
           <div className="text-center">
-            <p className="font-medium" style={{ color: "var(--text-secondary)" }}>
+            <p className="text-xl font-semibold text-white mb-2">
               No agents found
             </p>
-            <p className="text-sm mt-1" style={{ color: "var(--text-muted)" }}>
-              {search ? "Try adjusting your search" : "Create your first agent to get started"}
+            <p className="text-slate-400">
+              {search ? "Try adjusting your search or filters" : "Create your first agent to get started"}
             </p>
           </div>
           {!search && (
-            <Link href="/agents/new" className="btn btn-primary">
-              <Plus size={14} /> Create Agent
+            <Link
+              href="/agents/new"
+              className="inline-flex items-center gap-2 px-6 py-3 bg-indigo-600 hover:bg-indigo-500 text-white font-medium rounded-lg transition-colors"
+            >
+              <Plus size={16} /> Create Agent
             </Link>
           )}
         </div>
       )}
 
+      {/* Run Modal */}
       {runTarget && (
-        <div className="fixed inset-0 z-50 flex items-end justify-end" onClick={() => setRunTarget(null)}>
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm" onClick={() => setRunTarget(null)}>
           <div
-            className="w-full max-w-md h-full max-h-96 bottom-0 right-0 p-6 rounded-tl-2xl animate-fade-in-up"
-            style={{ background: "var(--surface)", border: "1px solid var(--border)" }}
+            className="w-full max-w-md bg-slate-800 rounded-xl border border-slate-700 p-6 animate-fade-in-up"
             onClick={(e) => e.stopPropagation()}
           >
-            <h3 className="font-semibold mb-4" style={{ color: "var(--text-primary)" }}>
+            <h3 className="text-lg font-semibold text-white mb-4">
               Run: {runTarget.name}
             </h3>
-            <textarea className="input textarea mb-4" placeholder="Enter your message for the agent..." />
-            <div className="flex gap-2">
-              <button onClick={() => setRunTarget(null)} className="btn btn-secondary flex-1">
+            <textarea
+              className="w-full bg-slate-700/50 border border-slate-600 rounded-lg px-4 py-3 text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 resize-none mb-4"
+              placeholder="Enter your message for the agent..."
+              rows={4}
+            />
+            <div className="flex gap-3">
+              <button
+                onClick={() => setRunTarget(null)}
+                className="flex-1 px-4 py-2 bg-slate-700 hover:bg-slate-600 text-white rounded-lg transition-colors"
+              >
                 Cancel
               </button>
-              <Link href={`/agents/${runTarget.id}`} className="btn btn-primary flex-1 justify-center">
+              <Link
+                href={`/agents/${runTarget.id}`}
+                className="flex-1 px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg transition-colors text-center"
+              >
                 Open Agent
               </Link>
             </div>
